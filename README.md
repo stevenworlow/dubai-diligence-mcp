@@ -22,7 +22,7 @@ download.
 
 This server puts the registered record one question away.
 
-## The one thing no other source answers
+## The split nobody gives you free
 
 **74% of registered Dubai home sales are off-plan.** So the single blended median that every data
 source publishes is mostly an off-plan price wearing a neutral label.
@@ -38,7 +38,9 @@ Palm Jumeirah, last 12 months of registered sales:
 A buyer of a ready apartment is shown a figure 31% above their market. A buyer off-plan is shown
 one far below theirs. **The same number is wrong for both of them, in opposite directions.**
 
-`dubai_price_split` is the only tool we know of that returns the split.
+`dubai_price_split` returns both sides, free and without a subscription. PropertyIndex carries an
+"Off-plan : ready" ratio behind its Pro tier at AED 500 a month; this gives you the actual price on
+each side instead of the ratio, and costs nothing.
 
 ## Tools
 
