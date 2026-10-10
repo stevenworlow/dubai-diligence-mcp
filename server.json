@@ -1,0 +1,19 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.stevenworlow/dubai-diligence-mcp",
+  "title": "Dubai Diligence",
+  "description": "Dubai Land Department registered prices, rents, yields and a monthly house price index.",
+  "repository": {
+    "url": "https://github.com/stevenworlow/dubai-diligence-mcp",
+    "source": "github",
+    "id": "R_kgDOVDkQdA"
+  },
+  "version": "1.0.0",
+  "websiteUrl": "https://dubaidiligence.com",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://dubaidiligence.com/api/mcp"
+    }
+  ]
+}
