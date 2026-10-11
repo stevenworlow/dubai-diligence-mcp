@@ -1,0 +1,56 @@
+# Publish this server to the official MCP registry whenever server.json changes.
+#
+# WHY THIS EXISTS: the first publish was done by hand, with the publisher CLI's GitHub device
+# flow, which means a person at a browser. So the registry entry was frozen at whatever it said
+# that day, and correcting it needed Steven rather than a commit. It is now a commit.
+#
+# Authentication is GitHub Actions OIDC, so there is no token to store and nothing to rotate. The
+# registry accepts it because this repository is stevenworlow/dubai-diligence-mcp and the server is
+# named io.github.stevenworlow/dubai-diligence-mcp; those two have to agree or the publish is
+# refused. If the server is ever renamed to a com.dubaidiligence namespace, this needs the DNS
+# verification route instead.
+name: Publish to the MCP registry
+
+on:
+  push:
+    branches: [main]
+    paths: ["server.json"]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      # The whole point: mint an OIDC token for the registry. Without this the login step fails.
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check server.json is valid before trying to publish it
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          d = json.load(open("server.json"))
+          problems = []
+          # The registry enforces these; failing here gives a readable error instead of a 400.
+          if len(d.get("description", "")) > 100: problems.append("description over 100 chars")
+          if len(d.get("title", "")) > 100: problems.append("title over 100 chars")
+          if not d.get("version"): problems.append("no version")
+          if not d.get("name", "").startswith("io.github.stevenworlow/"):
+              problems.append("name must stay in the io.github.stevenworlow namespace for OIDC to be accepted")
+          if problems:
+              print("server.json is not publishable:"); [print("  -", p) for p in problems]; sys.exit(1)
+          print(f"ok: {d['name']} {d['version']}, description {len(d['description'])} chars")
+          PY
+
+      - name: Install the publisher
+        run: |
+          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/').tar.gz" \
+            | tar xz mcp-publisher
+          chmod +x mcp-publisher
+
+      - name: Publish
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
